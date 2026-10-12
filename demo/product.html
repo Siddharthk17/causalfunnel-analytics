@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trailhead Backpack — Northwind Store</title>
+<style>
+  body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; background: #fafafa; color: #111; }
+  header { background: #111; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+  header nav a { color: #ddd; margin-left: 16px; text-decoration: none; font-size: 14px; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .photo { background: #e8e4dc; border-radius: 12px; min-height: 320px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+  .info { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 24px; }
+  .info h1 { margin: 0 0 8px; }
+  .muted { color: #666; font-size: 14px; }
+  .price { font-size: 24px; font-weight: 800; margin: 16px 0; }
+  .row { display: flex; gap: 10px; margin-top: 16px; }
+  button, .btn { background: #111; color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; font-size: 14px; cursor: pointer; text-decoration: none; }
+  .btn-ghost { background: #fff; color: #111; border: 1px solid #ddd; }
+  ul { padding-left: 18px; color: #444; font-size: 14px; }
+  @media (max-width: 720px) { .wrap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header><strong>Northwind Store</strong><nav><a href="/demo/">Home</a><a href="/demo/product.html">Product</a><a href="/demo/checkout.html">Checkout</a></nav></header>
+<main class="wrap">
+  <div class="photo">🎒</div>
+  <div class="info">
+    <h1>Trailhead Backpack 22L</h1>
+    <p class="muted">Water-resistant ripstop · padded 15" sleeve · 5-year warranty</p>
+    <div class="price">₹2,499</div>
+    <ul><li>22L main compartment with organisation panel</li><li>Recycled 900D shell, PFC-free DWR</li><li>Free returns within 30 days</li></ul>
+    <div class="row">
+      <button id="buy">Add to cart</button>
+      <a class="btn btn-ghost" href="/demo/checkout.html">Buy now</a>
+    </div>
+    <p class="muted" id="note" style="min-height:20px"></p>
+    <p><a href="/demo/" style="font-size:13px">← back to storefront</a></p>
+  </div>
+</main>
+<script>
+  document.getElementById("buy").addEventListener("click", function () {
+    document.getElementById("note").textContent = "Added to cart — this click and the page_view are in your session timeline.";
+  });
+</script>
+<script src="/tracker.js" data-api="" defer></script>
+</body>
+</html>

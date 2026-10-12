@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Checkout — Northwind Store</title>
+<style>
+  body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; background: #fafafa; color: #111; }
+  header { background: #111; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+  header nav a { color: #ddd; margin-left: 16px; text-decoration: none; font-size: 14px; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 32px 20px 64px; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 24px; }
+  label { display: block; font-size: 13px; margin: 12px 0 4px; color: #333; }
+  input { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+  button { margin-top: 18px; background: #15803d; color: #fff; border: 0; border-radius: 8px; padding: 11px 16px; font-size: 15px; cursor: pointer; width: 100%; }
+  .ok { display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; margin-top: 16px; font-size: 14px; }
+</style>
+</head>
+<body>
+<header><strong>Northwind Store</strong><nav><a href="/demo/">Home</a><a href="/demo/product.html">Product</a><a href="/demo/checkout.html">Checkout</a></nav></header>
+<main class="wrap">
+  <div class="card">
+    <h2 style="margin:0">Checkout</h2>
+    <p style="color:#666;font-size:14px">Demo form — submitting fires clicks you can replay in the session view.</p>
+    <label>Name</label><input placeholder="Aarav Sharma" />
+    <label>Address</label><input placeholder="14 MG Road, Bengaluru" />
+    <label>UPI id</label><input placeholder="aarav@okhdfc" />
+    <button id="pay">Pay ₹2,499</button>
+    <div class="ok" id="ok">Order placed (demo). Check the dashboard — this whole journey from home → product → checkout is one session.</div>
+    <p><a href="/demo/" style="font-size:13px">← back to storefront</a></p>
+  </div>
+</main>
+<script>
+  document.getElementById("pay").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("ok").style.display = "block";
+  });
+</script>
+<script src="/tracker.js" data-api="" defer></script>
+</body>
+</html>

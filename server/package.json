@@ -1,0 +1,26 @@
+{
+  "name": "causalfunnel-api",
+  "version": "1.0.0",
+  "description": "Event ingestion and analytics API for the CausalFunnel assignment",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed": "node src/seed.js",
+    "test": "node --test src/validate.test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.4.0",
+    "morgan": "^1.10.0",
+    "zod": "^3.23.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
