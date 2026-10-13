@@ -1,0 +1,23 @@
+# Render blueprint for the API (which also serves the demo store and tracker).
+# Create the service with: render blueprint launch  — or paste this URL into
+# Render's New > Blueprint dashboard.
+#
+# MONGODB_URI must be set to a real cluster before the first deploy; Render's
+# free tier ships no database. A MongoDB Atlas M0 cluster is free forever.
+services:
+  - type: web
+    name: causalfunnel-api
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm ci --omit=dev
+    startCommand: cd server && npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: MONGODB_URI
+        sync: false
+      # Restrict to the deployed dashboard origin, comma separated.
+      # - key: CORS_ORIGIN
+      #   sync: false

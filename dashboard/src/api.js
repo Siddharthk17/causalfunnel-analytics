@@ -1,7 +1,17 @@
-const BASE = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+const CONFIGURED = import.meta.env.VITE_API_URL;
+const LOCAL = /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(window.location.hostname);
+
+// Falling back to localhost in a hosted build produces a dashboard that looks
+// fine but silently talks to the visitor's own machine, so it is treated as a
+// configuration error instead.
+export const API_BASE = (CONFIGURED || (LOCAL ? "http://localhost:4000" : "")).replace(/\/$/, "");
+export const API_MISCONFIGURED = API_BASE === "";
 
 async function request(path) {
-  const res = await fetch(BASE + path);
+  if (API_MISCONFIGURED) {
+    throw new Error("VITE_API_URL is not set — this build has no API to talk to");
+  }
+  const res = await fetch(API_BASE + path);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `request failed: ${res.status}`);

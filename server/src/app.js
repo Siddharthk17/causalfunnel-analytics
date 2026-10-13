@@ -17,6 +17,10 @@ const repoRoot = path.resolve(here, "..", "..");
 export function buildApp() {
   const app = express();
   app.disable("x-powered-by");
+  // Hosted platforms terminate TLS in front of us, so every socket arrives from
+  // one proxy IP. Without this, rate limiting and IP logging see the proxy
+  // instead of the real visitor and bucket all traffic together.
+  app.set("trust proxy", 1);
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
   app.use(express.json({ limit: "64kb" }));

@@ -48,6 +48,64 @@ cd server && cp .env.example .env && npm install && npm run seed && npm run dev
 cd dashboard && npm install && npm run dev
 ```
 
+## Deploy
+
+Three free tiers, no card required: **MongoDB Atlas M0** for the database, **Render** for the API, **Vercel** for the dashboard.
+
+### 1. Database — MongoDB Atlas (free M0)
+
+Sign up at cloud.mongodb.com, create a free cluster, then **Database Access → Add New Database User** and
+**Network Access → Allow access from anywhere** (`0.0.0.0/0`) so the hosted API can reach it.
+Copy the connection string and swap the password placeholder:
+
+```
+mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/causalfunnel?retryWrites=true&w=majority
+```
+
+### 2. API + demo store + tracker — Render (free)
+
+`render.yaml` is a ready blueprint. Either connect the repo at
+[dashboard.render.com/blueprint](https://dashboard.render.com/blueprint) or run:
+
+```bash
+render login
+render blueprint launch
+```
+
+Set `MONGODB_URI` to the Atlas string when prompted. When it finishes you get an origin like
+`https://causalfunnel-api.onrender.com` which serves the API, the demo store at `/demo/`, and the
+tracker at `/tracker.js`.
+
+Free-tier services idle out after 15 minutes and take roughly a minute to wake. The dashboard already
+shows an "api unreachable" state while it does, and recovers on its own.
+
+### 3. Dashboard — Vercel (free)
+
+```bash
+npm i -g vercel
+vercel login
+cd dashboard
+vercel --prod --build-env VITE_API_URL=https://causalfunnel-api.onrender.com
+```
+
+Vercel detects the Vite preset. `VITE_API_URL` is baked in at build time — omitting it on a hosted
+build shows a red configuration banner instead of silently calling `localhost`.
+
+### Seed the hosted database
+
+```bash
+cd server
+MONGODB_URI="mongodb+srv://..." npm run seed
+```
+
+### Hosting notes
+
+- `trust proxy` is enabled, so per-IP rate limiting sees the real client rather than the platform proxy.
+- `bufferCommands` is off, so a database outage returns an error instead of hanging a request.
+- Set `CORS_ORIGIN` to the deployed dashboard origin to lock cross-origin reads to your own front end.
+- On a serverless host set `DB_CONNECT_ATTEMPTS=1` so cold starts fail fast rather than retrying past
+  the function timeout.
+
 | Service  | Local URL               |
 |----------|-------------------------|
 | Dashboard| http://localhost:5173   |

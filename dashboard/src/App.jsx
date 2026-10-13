@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchSession, fetchSessions } from "./api.js";
+import { fetchSession, fetchSessions, API_MISCONFIGURED } from "./api.js";
 import { Overview } from "./components/Overview.jsx";
 import { SessionList } from "./components/SessionList.jsx";
 import { SessionDetail } from "./components/SessionDetail.jsx";
@@ -93,6 +93,12 @@ export default function App() {
       </header>
 
       <main>
+        {API_MISCONFIGURED && (
+          <div className="error">
+            This build has no API URL. Rebuild with <code>VITE_API_URL</code> set to the deployed API
+            origin, for example <code>VITE_API_URL=https://your-api.onrender.com npm run build</code>.
+          </div>
+        )}
         {error && <div className="error">{error}</div>}
         {tab === "overview" && <Overview />}
         {tab === "sessions" && (
