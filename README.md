@@ -4,6 +4,19 @@ A session tracking pipeline: a dependency-free browser tracker, a Node/Mongo eve
 
 Live flow: visit `/demo/` → clicks and page views land in Mongo → dashboard shows sessions and click heatmaps within seconds.
 
+## Live demo
+
+| | |
+|---|---|
+| **Dashboard** | https://dashboard-omega-puce-96.vercel.app |
+| **Demo store** | https://causalfunnel-api-fr2d.onrender.com/demo/ |
+| **API health** | https://causalfunnel-api-fr2d.onrender.com/health |
+| **Tracker** | https://causalfunnel-api-fr2d.onrender.com/tracker.js |
+
+Deployed on free tiers: Render (API, demo store and tracker) + Vercel (dashboard) + MongoDB Atlas M0.
+The Render service idles after 15 minutes; the first request after a quiet period takes about a minute
+to wake, during which the dashboard shows its offline state and recovers on its own.
+
 ## Tech stack
 
 - Tracker: vanilla JS, zero dependencies (`tracker/causalfunnel.js`)
