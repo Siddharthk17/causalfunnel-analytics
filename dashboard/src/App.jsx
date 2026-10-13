@@ -1,13 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchSession, fetchSessions, fetchStats } from "./api.js";
+import { fetchSession, fetchSessions } from "./api.js";
+import { Overview } from "./components/Overview.jsx";
 import { SessionList } from "./components/SessionList.jsx";
 import { SessionDetail } from "./components/SessionDetail.jsx";
 import { Heatmap } from "./components/Heatmap.jsx";
 import "./styles.css";
 
+const TABS = [
+  { id: "overview", index: "01", label: "Overview" },
+  { id: "sessions", index: "02", label: "Sessions" },
+  { id: "heatmap", index: "03", label: "Heatmap" },
+];
+
+function useClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return now;
+}
+
 export default function App() {
-  const [tab, setTab] = useState("sessions");
-  const [stats, setStats] = useState(null);
+  const [tab, setTab] = useState("overview");
   const [sessions, setSessions] = useState([]);
   const [page, setPage] = useState(1);
   const [totalSessions, setTotalSessions] = useState(0);
@@ -16,9 +31,9 @@ export default function App() {
   const [journeyLoading, setJourneyLoading] = useState(false);
   const [error, setError] = useState("");
   const [apiUp, setApiUp] = useState(true);
+  const now = useClock();
 
-  const loadOverview = useCallback(() => {
-    fetchStats().then(setStats).catch(() => setApiUp(false));
+  const loadSessions = useCallback(() => {
     fetchSessions(page)
       .then((data) => {
         setSessions(data.sessions);
@@ -32,10 +47,10 @@ export default function App() {
   }, [page]);
 
   useEffect(() => {
-    loadOverview();
-    const timer = setInterval(loadOverview, 10000);
+    loadSessions();
+    const timer = setInterval(loadSessions, 10000);
     return () => clearInterval(timer);
-  }, [loadOverview]);
+  }, [loadSessions]);
 
   const selectSession = (sessionId) => {
     setSelectedId(sessionId);
@@ -47,52 +62,85 @@ export default function App() {
   };
 
   return (
-    <>
-      <header className="topbar">
-        <div className="brand">Causal<span>Funnel</span> Analytics</div>
-        <div className={apiUp ? "status" : "status down"}>
-          <span className="dot" />{apiUp ? "api connected" : "api unreachable — is :4000 running?"}
+    <div className="page">
+      <header className="masthead">
+        <div className="masthead-rule">
+          <div className="masthead-row">
+            <div className="wordmark">
+              Causal<em>Funnel</em>
+            </div>
+            <div className={apiUp ? "edition" : "edition down"}>
+              <div className="live num">{apiUp ? "LIVE" : "OFFLINE"}</div>
+              <div className="num">
+                {now.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })} ·{" "}
+                {now.toLocaleTimeString(undefined, { hour12: false })}
+              </div>
+            </div>
+          </div>
         </div>
-      </header>
-      <main className="layout">
-        {error && <div className="error">{error}</div>}
-        <section className="stats">
-          <div className="stat"><div className="label">Sessions</div><div className="value">{stats?.totalSessions ?? "—"}</div></div>
-          <div className="stat"><div className="label">Events</div><div className="value">{stats?.totalEvents ?? "—"}</div></div>
-          <div className="stat"><div className="label">Page views</div><div className="value">{stats?.totalPageViews ?? "—"}</div></div>
-          <div className="stat"><div className="label">Clicks</div><div className="value">{stats?.totalClicks ?? "—"}</div></div>
-        </section>
-        <nav className="tabs">
-          <button className={tab === "sessions" ? "active" : ""} onClick={() => setTab("sessions")}>Sessions</button>
-          <button className={tab === "heatmap" ? "active" : ""} onClick={() => setTab("heatmap")}>Heatmap</button>
+        <nav className="index-tabs">
+          {TABS.map((entry) => (
+            <button
+              key={entry.id}
+              className={tab === entry.id ? "active" : ""}
+              onClick={() => setTab(entry.id)}
+            >
+              <span className="n">{entry.index}</span>
+              {entry.label}
+            </button>
+          ))}
         </nav>
-        <section className="panel">
-          {tab === "sessions" ? (
-            <>
-              <div className="panel-head">
-                <div><h2>Sessions</h2><p>Newest first · auto-refreshes every 10s</p></div>
-                <button onClick={loadOverview} style={{ border: "1px solid var(--line)", background: "#fff", borderRadius: 7, padding: "6px 12px", cursor: "pointer" }}>Refresh</button>
+      </header>
+
+      <main>
+        {error && <div className="error">{error}</div>}
+        {tab === "overview" && <Overview />}
+        {tab === "sessions" && (
+          <>
+            <div className="section-head">
+              <h1>
+                Every visit, <span className="accent">replayed.</span>
+              </h1>
+              <p>Pick a ticket to walk the exact path a visitor took — newest first.</p>
+            </div>
+            <section className="card">
+              <div className="ledger">
+                <SessionList sessions={sessions} selectedId={selectedId} onSelect={selectSession} />
               </div>
-              <div className="split">
-                <div className="sessions">
-                  <SessionList sessions={sessions} selectedId={selectedId} onSelect={selectSession} />
-                </div>
-                <SessionDetail sessionId={selectedId} events={journey} loading={journeyLoading} />
-              </div>
+              <SessionDetail sessionId={selectedId} events={journey} loading={journeyLoading} />
               <div className="pager">
                 <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-                <span>Page {page} · {totalSessions} sessions</span>
-                <button disabled={sessions.length < 20} onClick={() => setPage((p) => p + 1)}>Next →</button>
+                <span className="num">
+                  Page {page} · {totalSessions} sessions
+                </span>
+                <button disabled={sessions.length < 20} onClick={() => setPage((p) => p + 1)}>
+                  Next →
+                </button>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="panel-head"><div><h2>Click heatmap</h2><p>Where visitors actually click on each page</p></div></div>
+            </section>
+          </>
+        )}
+        {tab === "heatmap" && (
+          <>
+            <div className="section-head">
+              <h1>
+                Where fingers <span className="accent">land.</span>
+              </h1>
+              <p>Rings bloom in click order — watch the sequence, not just the pile.</p>
+            </div>
+            <section className="card">
               <Heatmap />
-            </>
-          )}
-        </section>
+            </section>
+          </>
+        )}
       </main>
-    </>
+
+      <footer className="colophon">
+        <span>CAUSALFUNNEL FIELD EDITION · VOL. 01</span>
+        <span className="num">
+          {totalSessions} SESSIONS ON RECORD
+        </span>
+      </footer>
+    </div>
   );
 }

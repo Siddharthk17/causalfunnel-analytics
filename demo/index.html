@@ -3,52 +3,64 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Northwind Store — demo shop for CausalFunnel tracking</title>
+<title>Northwind Store — everyday goods</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='4' fill='%23e2480c'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root { color-scheme: light; }
-  body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; background: #fafafa; color: #111; }
-  header { background: #111; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
-  header nav a { color: #ddd; margin-left: 16px; text-decoration: none; font-size: 14px; }
-  header nav a:hover { color: #fff; }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
-  .hero { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 28px; margin-bottom: 24px; }
-  .hero h1 { margin: 0 0 8px; font-size: 28px; }
-  .hero p { margin: 0 0 16px; color: #555; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 16px; }
-  .card h3 { margin: 0 0 6px; font-size: 16px; }
-  .card p { margin: 0 0 12px; color: #666; font-size: 13px; }
-  .price { font-weight: 700; margin-bottom: 12px; }
-  button, .btn { background: #111; color: #fff; border: 0; border-radius: 8px; padding: 9px 14px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
-  button:hover, .btn:hover { background: #333; }
-  .btn-ghost { background: #fff; color: #111; border: 1px solid #ddd; }
-  footer { text-align: center; color: #888; font-size: 12px; padding: 24px; }
+  :root { --paper: #f5f1e6; --card: #fffdf6; --ink: #1a1408; --muted: #57503f; --faint: #6e6656; --line: #e2d8c1; --signal: #e2480c; }
+  * { box-sizing: border-box; }
+  body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; background: var(--paper); background-image: radial-gradient(rgba(26,20,8,.055) 1px, transparent 1px); background-size: 22px 22px; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 26px 22px 70px; }
+  .mast { border-top: 4px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 14px 2px 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: "Fraunces", Georgia, serif; font-weight: 900; font-size: 26px; letter-spacing: -0.02em; }
+  .brand em { font-style: normal; color: var(--signal); }
+  nav a { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .05em; color: var(--muted); text-decoration: none; margin-left: 18px; }
+  nav a:hover { color: var(--signal); }
+  .hero { background: var(--card); border: 1px solid var(--ink); border-radius: 12px; box-shadow: 4px 4px 0 rgba(26,20,8,.9); padding: 34px 32px; margin: 26px 0 18px; }
+  .kicker { font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #b53a08; }
+  .hero h1 { font-family: "Fraunces", Georgia, serif; font-weight: 900; font-size: clamp(34px, 5vw, 52px); letter-spacing: -0.02em; line-height: 1.02; margin: 8px 0 10px; }
+  .hero h1 em { color: var(--signal); }
+  .hero p { margin: 0 0 20px; color: var(--muted); max-width: 60ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--ink); border-radius: 12px; box-shadow: 4px 4px 0 rgba(26,20,8,.9); padding: 20px; display: flex; flex-direction: column; }
+  .card .tag { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .1em; color: var(--faint); text-transform: uppercase; }
+  .card h3 { font-family: "Fraunces", Georgia, serif; font-size: 21px; margin: 6px 0 4px; }
+  .card p { margin: 0 0 12px; color: var(--muted); font-size: 13px; flex: 1; }
+  .price { font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 24px; margin-bottom: 14px; }
+  button, .btn { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); border-radius: 9px; padding: 10px 16px; font-size: 14px; font-family: "IBM Plex Mono", monospace; cursor: pointer; text-decoration: none; display: inline-block; box-shadow: 2px 2px 0 rgba(26,20,8,.35); }
+  button:hover, .btn:hover { background: var(--signal); border-color: var(--signal); }
+  button:active, .btn:active { transform: translate(1px, 1px); box-shadow: none; }
+  .btn-row { margin-top: 20px; }
+  .foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--ink); display: flex; justify-content: space-between; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--faint); }
 </style>
 </head>
 <body>
-<header>
-  <strong>Northwind Store</strong>
-  <nav>
-    <a href="/demo/">Home</a>
-    <a href="/demo/product.html">Product</a>
-    <a href="/demo/checkout.html">Checkout</a>
-  </nav>
-</header>
-<main class="wrap">
+<div class="wrap">
+  <header class="mast">
+    <div class="brand">Northwind <em>Store</em></div>
+    <nav><a href="/demo/">HOME</a><a href="/demo/product.html">PRODUCT</a><a href="/demo/checkout.html">CHECKOUT</a></nav>
+  </header>
+
   <section class="hero">
-    <h1>Everyday goods, tracked honestly.</h1>
-    <p>Click around — each page_view and click is sent to the CausalFunnel API with your demo session id. Open the dashboard to watch sessions appear live.</p>
-    <a class="btn" href="/demo/product.html">View featured product</a>
+    <span class="kicker">Est. 2026 — purveyors of everyday goods</span>
+    <h1>Honest goods, <em>tracked honestly.</em></h1>
+    <p>Click around — each page view and click is sent to the CausalFunnel API under your demo session. Open the dashboard to watch sessions appear live on the wire.</p>
+    <a class="btn" href="/demo/product.html">View featured product →</a>
   </section>
+
   <div class="grid">
-    <div class="card"><h3>Canvas Tote</h3><p>Heavyweight cotton, fits a laptop.</p><div class="price">₹899</div><button data-add="Canvas Tote">Add to cart</button></div>
-    <div class="card"><h3>Enamel Mug</h3><p>Campfire classic, 350ml.</p><div class="price">₹449</div><button data-add="Enamel Mug">Add to cart</button></div>
-    <div class="card"><h3>Desk Lamp</h3><p>Warm 2700K, USB-C powered.</p><div class="price">₹1,999</div><button data-add="Desk Lamp">Add to cart</button></div>
-    <div class="card"><h3>Wool Socks</h3><p>Merino blend, pack of 3.</p><div class="price">₹599</div><button data-add="Wool Socks">Add to cart</button></div>
+    <div class="card"><span class="tag">Nº 01 — Carry</span><h3>Canvas Tote</h3><p>Heavyweight cotton, fits a laptop.</p><div class="price">₹899</div><button data-add="Canvas Tote">Add to cart</button></div>
+    <div class="card"><span class="tag">Nº 02 — Camp</span><h3>Enamel Mug</h3><p>Campfire classic, 350ml.</p><div class="price">₹449</div><button data-add="Enamel Mug">Add to cart</button></div>
+    <div class="card"><span class="tag">Nº 03 — Desk</span><h3>Desk Lamp</h3><p>Warm 2700K, USB-C powered.</p><div class="price">₹1,999</div><button data-add="Desk Lamp">Add to cart</button></div>
+    <div class="card"><span class="tag">Nº 04 — Trail</span><h3>Wool Socks</h3><p>Merino blend, pack of 3.</p><div class="price">₹599</div><button data-add="Wool Socks">Add to cart</button></div>
   </div>
-  <p style="margin-top:20px"><a class="btn btn-ghost" href="/demo/checkout.html">Go to checkout →</a></p>
-</main>
-<footer>Demo storefront for analytics testing. Session id lives in localStorage as cf_session_id.</footer>
+  <div class="btn-row"><a class="btn" href="/demo/checkout.html">Go to checkout →</a></div>
+
+  <footer class="foot"><span>NORTHWIND PRINT WORKS · VOL. 01</span><span class="mono">SESSION IN LOCALSTORAGE AS cf_session_id</span></footer>
+</div>
 <script>
   document.querySelectorAll("[data-add]").forEach(function (btn) {
     btn.addEventListener("click", function () {

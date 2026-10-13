@@ -44,7 +44,7 @@ Manual run without Docker:
 # terminal 1 — api (needs Mongo on localhost:27017)
 cd server && cp .env.example .env && npm install && npm run seed && npm run dev
 
-# terminal 2 — dashboard
+# terminal 2 — dashboard (Vite bakes VITE_API_URL in at build time, so set it before `npm run build`)
 cd dashboard && npm install && npm run dev
 ```
 
@@ -56,24 +56,26 @@ cd dashboard && npm install && npm run dev
 
 ## Tracker snippet
 
-Drop this on any page. `data-api` is the API origin; omit it locally and it defaults to `http://localhost:4000`.
+Drop this on any page. With no `data-api`, events post to the page's own origin — correct whenever the API serves the page, with no configuration.
 
 ```html
 <script src="http://localhost:4000/tracker.js" data-api="http://localhost:4000" defer></script>
 ```
 
-For SPAs, call `window.causalfunnel.page()` after each route change. Session id is exposed via `window.causalfunnel.session()` and persisted in `localStorage` (`cf_session_id`) with a cookie fallback.
+Set `data-api` only when the tracker is loaded cross-origin from a separate API host. For SPAs, call `window.causalfunnel.page()` after each route change. Session id is exposed via `window.causalfunnel.session()` and persisted in `localStorage` (`cf_session_id`) with a cookie fallback.
 
 ## API
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
 | POST | `/api/events` | Ingest one event (`sessionId`, `type`, `pageUrl`, `timestamp?`, `x?`, `y?`, `xNorm?`, `yNorm?`, `viewportW/H?`, `targetLabel?`) |
+| GET | `/api/events/recent?limit=` | Newest events across sessions for the live wire (cap 100) |
 | GET | `/api/sessions?page=&limit=` | Sessions with `totalEvents`, `pageViews`, `clicks`, `firstSeen`, `lastSeen` |
 | GET | `/api/sessions/:sessionId` | Ordered events for one session (cap 500) |
 | GET | `/api/pages` | Distinct page URLs with totals (heatmap selector) |
 | GET | `/api/heatmaps?url=` | Click points for one page (cap 2000, newest first) |
 | GET | `/api/stats` | Totals for the dashboard header |
+| GET | `/api/stats/timeline?hours=` | Per-hour view/click buckets for the activity chart (1–168h) |
 | GET | `/health` | Liveness |
 
 Validation is Zod at the route boundary; failures return 400 with field details. Ingestion is rate-limited to 600 req/min per IP.

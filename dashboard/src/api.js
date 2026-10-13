@@ -14,3 +14,5 @@ export const fetchSessions = (page = 1, limit = 20) => request(`/api/sessions?pa
 export const fetchSession = (sessionId) => request(`/api/sessions/${encodeURIComponent(sessionId)}`);
 export const fetchPages = () => request("/api/pages");
 export const fetchHeatmap = (pageUrl) => request(`/api/heatmaps?url=${encodeURIComponent(pageUrl)}`);
+export const fetchTimeline = (hours = 24) => request(`/api/stats/timeline?hours=${hours}`);
+export const fetchRecent = (limit = 30) => request(`/api/events/recent?limit=${limit}`);
