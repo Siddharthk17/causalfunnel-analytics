@@ -6,7 +6,11 @@
   "use strict";
 
   var script = document.currentScript;
-  var API_BASE = (script && script.getAttribute("data-api")) || window.__CF_API__ || "http://localhost:4000";
+  var CONFIGURED = (script && script.getAttribute("data-api")) || window.__CF_API__;
+  // Prefer the page's own origin: the demo store is served by the API itself,
+  // so same-origin is correct on any host and needs no configuration. The
+  // localhost fallback only applies to file:// pages, where origin is "null".
+  var API_BASE = CONFIGURED || (window.location.origin !== "null" ? window.location.origin : "http://localhost:4000");
   var ENDPOINT = API_BASE.replace(/\/$/, "") + "/api/events";
   var SESSION_KEY = "cf_session_id";
   var FLUSH_DELAY_MS = 300;

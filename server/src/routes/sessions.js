@@ -12,6 +12,8 @@ sessionsRouter.get("/", async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const rows = await Event.aggregate([
+      // Ascending first so the pushed page list below reads in visit order.
+      { $sort: { timestamp: 1 } },
       {
         $group: {
           _id: "$sessionId",
@@ -20,7 +22,7 @@ sessionsRouter.get("/", async (req, res, next) => {
           clicks: { $sum: { $cond: [{ $eq: ["$type", "click"] }, 1, 0] } },
           firstSeen: { $min: "$timestamp" },
           lastSeen: { $max: "$timestamp" },
-          pages: { $addToSet: "$pageUrl" },
+          pages: { $push: "$pageUrl" },
         },
       },
       { $sort: { lastSeen: -1 } },
@@ -38,7 +40,12 @@ sessionsRouter.get("/", async (req, res, next) => {
                 clicks: 1,
                 firstSeen: 1,
                 lastSeen: 1,
-                pageCount: { $size: "$pages" },
+                pageCount: { $size: { $setUnion: ["$pages", []] } },
+                // Chronological encounters (capped) for the dashboard's route
+                // chips; the client dedupes them into visit order. The cap is
+                // generous on purpose — slicing to a handful first can hide
+                // the final page behind repeats of the first.
+                pages: { $slice: ["$pages", 50] },
               },
             },
           ],
@@ -59,7 +66,10 @@ sessionsRouter.get("/", async (req, res, next) => {
 sessionsRouter.get("/:sessionId", async (req, res, next) => {
   try {
     const { sessionId } = sessionParams.parse(req.params);
-    const limit = Math.min(Number(req.query.limit) || 500, 500);
+    // Clamp to [1, 500]: unvalidated Number() previously reached mongoose
+    // directly, where 0/negative/huge values throw or over-return.
+    const requested = Number(req.query.limit);
+    const limit = Number.isFinite(requested) ? Math.min(Math.max(Math.floor(requested), 1), 500) : 500;
     const events = await Event.find({ sessionId }).sort({ timestamp: 1 }).limit(limit).lean();
     if (events.length === 0) return res.status(404).json({ error: "session not found" });
     res.json({ sessionId, events });

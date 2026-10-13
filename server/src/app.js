@@ -32,6 +32,9 @@ export function buildApp() {
 
   app.get("/health", (_req, res) => res.json({ ok: true }));
 
+  // Unknown /api/* paths answer JSON so fetch clients never parse an HTML 404.
+  app.use("/api", (_req, res) => res.status(404).json({ error: "not found" }));
+
   // Demo shop + tracker served same-origin so adblockers and CORS
   // never interfere with the reviewer's first click-through.
   app.use("/tracker.js", express.static(path.join(repoRoot, "tracker", "causalfunnel.js")));
@@ -40,6 +43,10 @@ export function buildApp() {
   // eslint-disable-next-line no-unused-vars
   app.use((err, _req, res, _next) => {
     if (err?.name === "ZodError") return res.status(400).json({ error: "invalid input" });
+    // express.json failures must not surface as 500s: the client sent bytes
+    // we refuse, which is a 4xx by definition.
+    if (err?.type === "entity.parse.failed") return res.status(400).json({ error: "malformed json" });
+    if (err?.type === "entity.too.large") return res.status(413).json({ error: "payload too large" });
     console.error(err);
     res.status(500).json({ error: "internal error" });
   });

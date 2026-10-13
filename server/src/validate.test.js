@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { eventPayload, heatmapQuery, pagination } from "./validate.js";
+import { eventPayload, heatmapQuery, pagination, recentQuery, timelineQuery } from "./validate.js";
 
 describe("event payload", () => {
   it("accepts a page_view without coordinates", () => {
@@ -38,5 +38,15 @@ describe("query schemas", () => {
 
   it("requires url for heatmap", () => {
     assert.equal(heatmapQuery.safeParse({}).success, false);
+  });
+
+  it("defaults timeline to 24h and caps at one week", () => {
+    assert.deepEqual(timelineQuery.parse({}), { hours: 24 });
+    assert.equal(timelineQuery.safeParse({ hours: 9999 }).success, false);
+  });
+
+  it("defaults recent to 30 and caps at 100", () => {
+    assert.deepEqual(recentQuery.parse({}), { limit: 30 });
+    assert.equal(recentQuery.safeParse({ limit: 500 }).success, false);
   });
 });

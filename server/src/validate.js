@@ -39,3 +39,11 @@ export const heatmapQuery = z.object({
   url: pageUrl,
   limit: z.coerce.number().int().min(1).max(2000).default(1000),
 });
+
+export const timelineQuery = z.object({
+  hours: z.coerce.number().int().min(1).max(168).default(24),
+});
+
+export const recentQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(30),
+});

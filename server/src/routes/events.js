@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Event } from "../models/event.js";
-import { eventPayload } from "../validate.js";
+import { eventPayload, recentQuery } from "../validate.js";
 
 export const eventsRouter = Router();
 
@@ -19,6 +19,22 @@ eventsRouter.post("/", async (req, res, next) => {
       userAgent: String(req.headers["user-agent"] || "").slice(0, 512) || undefined,
     });
     res.status(201).json({ id: String(stored._id) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/events/recent?limit= — the global live wire, newest first.
+// Capped at 100: this is a peek, not an export.
+eventsRouter.get("/recent", async (req, res, next) => {
+  try {
+    const { limit } = recentQuery.parse(req.query);
+    const events = await Event.find({})
+      .sort({ timestamp: -1 })
+      .limit(limit)
+      .select({ sessionId: 1, type: 1, pageUrl: 1, timestamp: 1, x: 1, y: 1, targetLabel: 1 })
+      .lean();
+    res.json({ events });
   } catch (err) {
     next(err);
   }

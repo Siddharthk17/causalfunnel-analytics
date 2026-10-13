@@ -19,7 +19,13 @@ async function boot(attempt = 1) {
     await new Promise((r) => setTimeout(r, 2000 * attempt));
     return boot(attempt + 1);
   }
-  buildApp().listen(PORT, () => console.log(`api listening on :${PORT}`));
+  const app = buildApp();
+  const listener = app.listen(PORT, () => console.log(`api listening on :${PORT}`));
+  // A port conflict otherwise throws an unhandled 'error' with a bare stack.
+  listener.on("error", (err) => {
+    console.error(`failed to listen on :${PORT}: ${err.message}`);
+    process.exit(1);
+  });
 }
 
 boot();
