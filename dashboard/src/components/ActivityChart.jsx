@@ -9,8 +9,11 @@ export function ActivityChart({ buckets, hours }) {
   const [hover, setHover] = useState(null);
 
   const series = useMemo(() => {
+    // Buckets come from Mongo $dateTrunc, which cuts on UTC hours. Snapping to
+    // a local hour boundary makes every lookup miss on any non-UTC browser, so
+    // the axis is aligned in UTC and only the tick labels render in local time.
     const start = new Date();
-    start.setMinutes(0, 0, 0);
+    start.setUTCMinutes(0, 0, 0);
     const points = [];
     const byHour = new Map(buckets.map((b) => [new Date(b.hour).getTime(), b]));
     for (let i = hours - 1; i >= 0; i--) {

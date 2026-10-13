@@ -35,7 +35,7 @@ export function EventSplit({ pageViews, clicks }) {
           <span className="swatch" style={{ background: "#e2480c" }} /> Clicks <b className="num">{clicks}</b>
         </div>
         <div className="row">
-          Click-through <b className="num">{pageViews === 0 ? "—" : `${Math.round((clicks / pageViews) * 100)}%`}</b>
+          Clicks per view <b className="num">{pageViews === 0 ? "—" : (clicks / pageViews).toFixed(2)}</b>
         </div>
       </div>
     </div>
